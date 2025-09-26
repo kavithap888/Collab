@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sunny Delights Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      background: #fff9e6;
+      color: #333;
+    }
+    header {
+      background-color: #f9c74f;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #fff;
+    }
+    .dashboard {
+      padding: 2rem;
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+    .card {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .card h2 {
+      margin: 0.5rem 0;
+      font-size: 1.2rem;
+      color: #f9844a;
+    }
+  </style>
+</head>
+<body>
+  <header>Sunny Delights Dashboard</header>
+  <div id="root"></div>
+
+  <!-- React and ReactDOM via CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <!-- React Code -->
+  <script type="text/babel">
+    function DashboardCard({ title, value }) {
+      return (
+        <div className="card">
+          <h2>{title}</h2>
+          <p>{value}</p>
+        </div>
+      );
+    }
+
+    function App() {
+      const data = [
+        { title: "Total Sales", value: "$12,430" },
+        { title: "Orders Today", value: "128" },
+        { title: "Top Product", value: "Mango Smoothie" },
+        { title: "Stock Alert", value: "Low: Pineapple" }
+      ];
+
+      return (
+        <div className="dashboard">
+          {data.map((item, index) => (
+            <DashboardCard key={index} title={item.title} value={item.value} />
+          ))}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
