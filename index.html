@@ -1,90 +1,199 @@
+import React, { useState, useEffect } from "react";
+import ReactDOM from "react-dom/client";
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Sunny Delights Dashboard</title>
+/* --- Inline CSS styles as JS objects or in a <style> tag — here we’ll do a <style> tag approach --- */
+const Styles = () => (
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background: #f4f7fa;
-    }
-    header {
-      background: #ffcc00;
-      padding: 1rem;
-      text-align: center;
-      font-size: 1.5rem;
-      color: #333;
-    }
-    .dashboard {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-    }
-    .card {
-      background: white;
-      padding: 1rem 2rem;
-      margin: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      width: 300px;
-      text-align: center;
-    }
-    button {
-      padding: 0.5rem 1rem;
-      background: #ff8800;
-      border: none;
-      border-radius: 4px;
-      color: white;
-      cursor: pointer;
-    }
+    {`
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body, html, #root { height: 100%; font-family: Arial, sans-serif; }
+      .navbar { background: #2c3e50; color: white; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; }
+      .navbar-links { list-style: none; display: flex; gap: 15px; }
+      .navbar-links a { color: white; text-decoration: none; }
+      main { padding: 20px; }
+      section { margin-bottom: 40px; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+      h2 { color: #34495e; margin-bottom: 16px; }
+      .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+      .input-group input { flex: 1; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+      .input-group button { padding: 8px 12px; border: none; background: #2980b9; color: white; border-radius: 4px; cursor: pointer; }
+      .score-display p { font-size: 1.1em; }
+      .accomm-list { list-style: none; padding: 0; }
+      .accomm-item { border-bottom: 1px solid #eee; padding: 12px 0; }
+      .checklist li { margin: 8px 0; display: flex; align-items: center; }
+      .checklist input[type="checkbox"] { margin-right: 8px; }
+      .checklist .done { text-decoration: line-through; color: #999; }
+      .new-post input, .new-post textarea { width: 100%; padding: 8px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
+      .new-post button { padding: 8px 12px; background: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; }
+      .post-item { margin-bottom: 20px; }
+      footer { text-align: center; padding: 20px; background: #f0f0f0; }
+    `}
   </style>
-</head>
-<body>
-  <div id="root"></div>
+);
 
-  <!-- Load React + ReactDOM from CDN -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+function App() {
+  /* Safety Score */
+  const [neighborhood, setNeighborhood] = useState("");
+  const [score, setScore] = useState(null);
 
-  <!-- React Code -->
-  <script type="text/babel">
-    const { useState } = React;
+  const handleCheck = () => {
+    // dummy: random score
+    const random = Math.floor(Math.random() * 100) + 1;
+    setScore(random);
+  };
 
-    // SunnyDelights component
-    function SunnyDelights() {
-      const [count, setCount] = useState(0);
+  /* Accommodations dummy data */
+  const [accommodations, setAccommodations] = useState([]);
+  useEffect(() => {
+    const demo = [
+      { id: 1, name: "Women’s Safe Stay A", city: "Hyderabad", rating: 4.5 },
+      { id: 2, name: "Girls’ Friendly Hostel B", city: "Bangalore", rating: 4.2 },
+    ];
+    setAccommodations(demo);
+  }, []);
 
-      return (
-        <div className="card">
-          <h2>Sunny Delights</h2>
-          <p>Delight counter: {count}</p>
-          <button onClick={() => setCount(count + 1)}>
-            Add Delight
-          </button>
-        </div>
-      );
-    }
+  /* Packing checklist */
+  const defaultItems = [
+    "Passport & IDs",
+    "Phone charger",
+    "Power bank",
+    "First aid kit",
+    "Comfortable shoes",
+    "Travel-size toiletries",
+    "Personal safety alarm",
+  ];
+  const [checked, setChecked] = useState({});
+  const toggleCheck = (item) => {
+    setChecked((prev) => ({ ...prev, [item]: !prev[item] }));
+  };
 
-    // Main Dashboard
-    function Dashboard() {
-      return (
-        <>
-          <header>Sunny Dashboard</header>
-          <div className="dashboard">
-            <SunnyDelights />
-            {/* Add more components here if needed */}
+  /* Forum */
+  const [posts, setPosts] = useState([
+    { id: 1, title: "Is it safe to walk alone in City X?", body: "I tried walking at night..." },
+    { id: 2, title: "Female-friendly guesthouses in Spain", body: "I visited last summer..." },
+  ]);
+  const [newPost, setNewPost] = useState({ title: "", body: "" });
+  const handlePostSubmit = () => {
+    if (!newPost.title || !newPost.body) return;
+    const next = { ...newPost, id: Date.now() };
+    setPosts((prev) => [next, ...prev]);
+    setNewPost({ title: "", body: "" });
+  };
+
+  return (
+    <div className="App">
+      <Styles />
+
+      <nav className="navbar">
+        <div className="navbar-logo">SafeTravelGirls</div>
+        <ul className="navbar-links">
+          <li><a href="#safety">Safety</a></li>
+          <li><a href="#accommodations">Accommodations</a></li>
+          <li><a href="#checklist">Packing</a></li>
+          <li><a href="#buddy">Buddy Match</a></li>
+          <li><a href="#forum">Forum</a></li>
+        </ul>
+      </nav>
+
+      <main>
+        {/* Safety Score Section */}
+        <section id="safety">
+          <h2>Neighborhood Safety Score</h2>
+          <div className="input-group">
+            <input
+              type="text"
+              placeholder="Enter city / neighborhood"
+              value={neighborhood}
+              onChange={(e) => setNeighborhood(e.target.value)}
+            />
+            <button onClick={handleCheck}>Check Safety</button>
           </div>
-        </>
-      );
-    }
+          {score !== null && (
+            <div className="score-display">
+              <p>
+                Safety score for <strong>{neighborhood}</strong>: {score} / 100
+              </p>
+            </div>
+          )}
+        </section>
 
-    // Render App
-    const root = ReactDOM.createRoot(document.getElementById('root'));
-    root.render(<Dashboard />);
-  </script>
-</body>
-</html>
+        {/* Accommodations Section */}
+        <section id="accommodations">
+          <h2>Women‑Friendly Accommodations</h2>
+          <ul className="accomm-list">
+            {accommodations.map((acc) => (
+              <li key={acc.id} className="accomm-item">
+                <h3>{acc.name}</h3>
+                <p>City: {acc.city}</p>
+                <p>Rating: {acc.rating} / 5</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Packing Checklist Section */}
+        <section id="checklist">
+          <h2>Packing Checklist</h2>
+          <ul className="checklist">
+            {defaultItems.map((item) => (
+              <li key={item}>
+                <input
+                  type="checkbox"
+                  checked={!!checked[item]}
+                  onChange={() => toggleCheck(item)}
+                />
+                <span className={checked[item] ? "done" : ""}>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Buddy Match Section */}
+        <section id="buddy">
+          <h2>Buddy Match / Local Guide Connect</h2>
+          <p>
+            Want a travel buddy or local guide? Fill your profile and find matches near your destination.
+          </p>
+          <button onClick={() => alert("Buddy Match feature coming soon!")}>
+            Go to Buddy Match
+          </button>
+        </section>
+
+        {/* Forum Section */}
+        <section id="forum">
+          <h2>Community Forum</h2>
+          <div className="new-post">
+            <input
+              type="text"
+              placeholder="Title"
+              value={newPost.title}
+              onChange={(e) => setNewPost((p) => ({ ...p, title: e.target.value }))}
+            />
+            <textarea
+              placeholder="Body"
+              value={newPost.body}
+              onChange={(e) => setNewPost((p) => ({ ...p, body: e.target.value }))}
+            ></textarea>
+            <button onClick={handlePostSubmit}>Post</button>
+          </div>
+          <div className="posts-list">
+            {posts.map((p) => (
+              <div key={p.id} className="post-item">
+                <h3>{p.title}</h3>
+                <p>{p.body}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <p>© 2025 SafeTravelGirls. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+}
+
+// Render
+const container = document.getElementById("root");
+const root = ReactDOM.createRoot(container);
+root.render(<App />);
